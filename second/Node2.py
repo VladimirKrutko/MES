@@ -1,4 +1,4 @@
-from Calculation import Calculation
+from Calculation2 import Calculation
 
 class Node:
     def __init__(self, x,y, pc, data):
@@ -6,7 +6,7 @@ class Node:
         self.y = y
         self.pc = pc
         self.data = data
-        self.surface = Calculation().surfaces(self.x, self.y, self.pc, self.data['Alfa'], self.data['Tot'], self.data, self.data['Conductivity'])
+        self.surface = Calculation(2).surfaces(self.x, self.y, self.pc, self.data['Alfa'], self.data['Tot'], self.data, self.data['Conductivity'])
 
     def __str__(self):
         return f"x => {' '.join(self.x)} \n y=> { ' '.join(self.y)}"

@@ -8,7 +8,6 @@ from sympy import true
 class Calkowanie:
     def __init__(self, pc_number):
         self.pc_number = pc_number
-        self.wagi = { i: sorted(self.get_weight()[i], key=lambda x: x['point']) for i in range(1,6) }
         self.dNdKsi4_4, self.dNdEta4_4 = self.matrixKsiEta()
         # self.dNdEta4_4 = []
         self.dNdKsi9_4 = [[0.0 for _ in range(4)] for _ in range(9)]
@@ -53,35 +52,7 @@ class Calkowanie:
                         prom[i][0][1] = -1.0
                 walls[3] = [prom[i][0] for i in range(len(wall_nodes))]
         return walls
-        
-        
-
-    def get_weight(self):
-        return {1: [ {'point': 0, 'weight': 2} ], 
-         2: [ {'point': num*((1/3.0)**(1/2)), 'weight':1 } for num in [-1,1]],
-         3: [ {'point': 0, 'weight': 8/9.0 },
-              {'point': -1*((3/5.0)**(1/2)), 'weight': 5/9.0 },
-              {'point': ((3/5.0)**(1/2)), 'weight': 5/9.0 }
-             ],
-        4: [[ {'point': num*( (3/7.0 - 2/7.0*(6/5.0)**(1/2) )**(1/2) ) , 'weight': (18+30**1/2)/36} for num in [-1,1]] 
-        + [ {'point': num*( (3/7.0 + 2/7.0*(6/5.0)**(1/2) )**(1/2) ) , 'weight': (18-30**1/2)/36} for num in [-1,1] ]][0],
-        5: [{'point': 0, 'weight': 128/225}] 
-        + [[ {'point': num*1/3*( (5-2*(10/7)**(1/2)))**(1/2), 'weight': (322+13*(70**(1/2)))/900}  for num in [-1,1] ] 
-            + [ {'point': num*1/3*( (5+2*(10/7)**(1/2)))**(1/2), 'weight': (322-13*(70**(1/2)))/900}  for num in [-1,1] ]][0]}
-    
-    def gauss_1d_integration(self, f, points):
-        integral = sum( node['weight']  * f(node['point']) for node in self.wagi[points])
-        return integral
-
-    def gauss_2d_integration(self, f, points):
-        nodes_x = self.wagi[points]
-        nodes_y = self.wagi[points]
-        integral = sum(node_x['weight'] * node_y['weight'] * f(node_x['point'], node_y['point']) for node_x in nodes_x for node_y in nodes_y)
-        return integral
-
-    def f(self, x):
-        return (1/4)*(1-x)
-
+            
     def ksi(self, ksi):
         ksis = []
         a = 1
@@ -158,10 +129,10 @@ class Calkowanie:
         return N_range
     
     def jacobian_matrix(self, xi, eta, x,y):
-        N1 = 0.25 * (1 - xi) * (1 - eta)
-        N2 = 0.25 * (1 + xi) * (1 - eta)
-        N3 = 0.25 * (1 + xi) * (1 + eta)
-        N4 = 0.25 * (1 - xi) * (1 + eta)
+        # N1 = 0.25 * (1 - xi) * (1 - eta)
+        # N2 = 0.25 * (1 + xi) * (1 - eta)
+        # N3 = 0.25 * (1 + xi) * (1 + eta)
+        # N4 = 0.25 * (1 - xi) * (1 + eta)
 
         dN1_dxi = -0.25 * (1 - eta)
         dN2_dxi = 0.25 * (1 - eta)
@@ -298,3 +269,4 @@ class Calkowanie:
     def print_matrix(matrix):
         for i in range(len(matrix)): # type: ignore
             print(", ".join( map(str, matrix[i]))) # type: ignore
+            

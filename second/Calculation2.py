@@ -1,11 +1,12 @@
 import math
 import numpy as np
-from Calkowanie import Calkowanie
+from Calkowanie2 import Calkowanie
 
 
 class Calculation:
-    def __init__(self):
-        self.calkowanie = Calkowanie()
+    def __init__(self, pc_number):
+        self.pc_number = pc_number
+        self.calkowanie = Calkowanie(pc_number)
 
     def L(self, x, y):
         lengths = []
@@ -15,16 +16,13 @@ class Calculation:
         return lengths
     
     def surfaces(self, x, y, pc, alfa, t_ot, data, k_t = 25):
-        det =  [Calkowanie.detJ( self.calkowanie.matrix_dx_dksi_dyd_ksi(x, y, ind)) for ind in range(4)] # type: ignore
-        # inv_det = [Calkowanie.detJ(np.linalg.inv(self.calkowanie.matrix_dx_dksi_dyd_ksi(x, y, ind))) for ind in range(4)]
-        jakobians = [self.calkowanie.matrix_dx_dksi_dyd_ksi(x, y, i) for i in range(4) ],
+        jakobians = self.calkowanie.J_matrixies(x, y)
+        det =  [np.linalg.det(jakobians[ind]) for ind in range(self.pc_number)] # type: ignore
         res_dict = {
             'dNdx': [np.array( self.calkowanie.mat_dN_dx(x, y, det[i])) for i in range(len(det)) ][0],
             'dNdy': [np.array( self.calkowanie.mat_dN_dy(x, y, det[i])) for i in range(len(det)) ][0],
             'Jakobian': jakobians,
-            # 'Jakobian_inv': [np.linalg.inv(self.calkowanie.matrix_dx_dksi_dyd_ksi(x, y, ind)) for ind in range(4)],
-            'H': sum( [self.calkowanie.H_pc_N(x,y, det[i], i, k_t, 1/det[i])  for i in range(4)] ),
-            # 'H_test':  sum( [self.calkowanie.H_pc_N(x,y, det[i], i, k_t, 1/inv_det[i])  for i in range(4)] ),
+            'H': sum( [self.calkowanie.H_pc_N(x,y, det[i], i, k_t, 1/det[i])  for i in range(self.pc_number)] ),
             'Hbc': self.Hbc_calulation(x, y, pc, alfa),
             'P': self.P_vector(x, y, pc, alfa, t_ot),
             'C' : self.C_calulation(jakobians[0], data)
@@ -40,15 +38,16 @@ class Calculation:
     def Hbc_calulation(self, x, y, pc, alfa):
         lengths =  self.L(x, y)
         Hbc = []
+        print(len(pc))
         for i in range(len(pc)):
             Pcs = pc[i]
             N_range = [ self.calkowanie.N_range(pc) for pc in Pcs]
-            Hbc.append( self.test_Hbc( N_range, alfa, lengths[i]/2 ) )
+            Hbc.append( self.test_Hbc( N_range, alfa, lengths[i]/2, 1.0 ) )
         return sum(Hbc)
 
-    def test_Hbc(self, n_range, alfa, length):
+    def test_Hbc(self, n_range, alfa, length, weight):
         dot_nranges = [ np.dot( n_range[i].reshape(4,1), n_range[i].reshape(1,4) ) for i in range( len( n_range))]
-        return alfa * sum(dot_nranges) * length
+        return (alfa * sum(dot_nranges) * length)*weight
 
     def P_vector(self, x, y, pc, alfa, t_ot):
         lengths = self.L(x, y)
