@@ -15,7 +15,7 @@ class Calculation:
             lengths.append( math.sqrt( ( ( x[first] - x[last] )**2 + ( y[first] - y[last] )**2 ) ) )
         return lengths
     
-    def surfaces(self, x, y, pc,alfa, t_ot, data, k_t = 25):
+    def surfaces(self, x, y, pc,alfa, t_ot, data, L_ind, k_t = 25):
         det =  [Calkowanie.detJ( self.calkowanie.matrix_dx_dksi_dyd_ksi(x, y, ind)) for ind in range(4)] # type: ignore
         # inv_det = [Calkowanie.detJ(np.linalg.inv(self.calkowanie.matrix_dx_dksi_dyd_ksi(x, y, ind))) for ind in range(4)]
         jakobians = [self.calkowanie.matrix_dx_dksi_dyd_ksi(x, y, i) for i in range(4) ],
@@ -26,7 +26,7 @@ class Calculation:
             # 'Jakobian_inv': [np.linalg.inv(self.calkowanie.matrix_dx_dksi_dyd_ksi(x, y, ind)) for ind in range(4)],
             'H': sum( [self.calkowanie.H_pc_N(x,y, det[i], i, k_t, 1/det[i])  for i in range(4)] ),
             # 'H_test':  sum( [self.calkowanie.H_pc_N(x,y, det[i], i, k_t, 1/inv_det[i])  for i in range(4)] ),
-            'Hbc': self.Hbc_calulation(x, y, pc, alfa),
+            'Hbc': self.Hbc_calulation(x, y, pc, alfa, L_ind),
             'P': self.P_vector(x, y, pc, alfa, t_ot),
             'C' : self.C_calulation(jakobians[0], data)
         }
@@ -38,13 +38,13 @@ class Calculation:
         N_sum = sum([ np.dot( N_range[i].reshape(4,1), N_range[i].reshape(1,4) )   for i in range( len( N_range))])
         return data['Density'] * data['SpecificHeat'] * N_sum * 1/det_j
         
-    def Hbc_calulation(self, x, y, pc, alfa):
+    def Hbc_calulation(self, x, y, pc, alfa, L_ind):
         lengths =  self.L(x, y)
         Hbc = []
         for i in range(len(pc)):
             Pcs = pc[i]
             N_range = [ self.calkowanie.N_range(pc) for pc in Pcs]
-            Hbc.append( self.test_Hbc( N_range, alfa, lengths[i]/2 ) )
+            Hbc.append( self.test_Hbc( N_range, alfa, lengths[L_ind[i]]/2 ) )
         return sum(Hbc)
 
     def test_Hbc(self, n_range, alfa, length):

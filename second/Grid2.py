@@ -4,13 +4,14 @@ from Node2 import Node
 from Calkowanie2 import Calkowanie
 
 class Grid:
-    # PC = [
-    #     [[1, -1/math.sqrt(3)], [1, 1/math.sqrt(3)]],   
-    #     [[-1/math.sqrt(3), 1], [1/math.sqrt(3), 1]],
-    #     [[-1, 1/math.sqrt(3)], [-1, -1/math.sqrt(3)]],
-    #     [[-1/math.sqrt(3), -1], [1/math.sqrt(3), -1]],
-    #     ]
-    PC = Calkowanie(2).PC_weight()
+    PC = [
+        [[1, -1/math.sqrt(3)], [1, 1/math.sqrt(3)]],   
+        [[-1/math.sqrt(3), 1], [1/math.sqrt(3), 1]],
+        [[-1, 1/math.sqrt(3)], [-1, -1/math.sqrt(3)]],
+        [[-1/math.sqrt(3), -1], [1/math.sqrt(3), -1]],
+        ]
+    PC.reverse()
+    # PC = Calkowanie(2).PC_weight()
     
     def __init__(self, data):
         self.data = data
