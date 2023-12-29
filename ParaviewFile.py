@@ -29,17 +29,18 @@ class ParaviewFile:
     def points(self):
         points = [f"POINTS { int(self.data['Nodes number'])} float\n"]
         for x_y in self.data['Node']:
-            # if x_y[0] == 0.0:
-            #     points.append(f"{int(x_y[0])} {x_y[1]} 1\n" )
-            # elif x_y[1] == 0.0:
-            #     points.append(f"{x_y[0]} {int(x_y[1])} 1\n" )
-            # else:
-            points.append(f"{x_y[0]} {x_y[1]} 0\n" )
+            if x_y[0] == 0.0:
+                points.append(f"{int(x_y[0])} {x_y[1]} 0\n" )
+            elif x_y[1] == 0.0:
+                points.append(f"{x_y[0]} {int(x_y[1])} 0\n" )
+            else:
+                points.append(f"{x_y[0]} {x_y[1]} 0\n" )
         return points    
 
     @add_newline_and_join
     def cells(self):
-        nodes_number = [f"CELLS {int(self.data['Elements number'])} {int(self.data['Elements number'])*5}\n"]
+        el_size = sum([i for i in range(int(self.data['Elements number'])+1)])
+        nodes_number = [f"CELLS {int(self.data['Elements number'])} {el_size}\n"]
         for element in self.data['Element']:
             nodes_number.append( '4 '+' '.join( [str(i-1) for i in element] )+'\n' )
         return nodes_number
