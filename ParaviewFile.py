@@ -27,8 +27,13 @@ class ParaviewFile:
 
     @add_newline_and_join
     def points(self):
-        points = [f"POINTS { self.data['Nodes number']} float\n"]
+        points = [f"POINTS { int(self.data['Nodes number'])} float\n"]
         for x_y in self.data['Node']:
+            # if x_y[0] == 0.0:
+            #     points.append(f"{int(x_y[0])} {x_y[1]} 1\n" )
+            # elif x_y[1] == 0.0:
+            #     points.append(f"{x_y[0]} {int(x_y[1])} 1\n" )
+            # else:
             points.append(f"{x_y[0]} {x_y[1]} 0\n" )
         return points    
 
@@ -48,7 +53,7 @@ class ParaviewFile:
 
 
     def clarifying_data(self):
-        return "".join([f"POINT_DATA {self.data['Nodes number']}\n",
+        return "".join([f"POINT_DATA {int(self.data['Nodes number'])}\n",
                 "SCALARS Temp float 1\n",
                 "LOOKUP_TABLE default\n"])
         
