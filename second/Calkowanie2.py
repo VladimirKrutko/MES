@@ -1,15 +1,16 @@
 import math
 import numpy as np
+from numpy.polynomial.legendre import leggauss
 
 class Calkowanie:
     def __init__(self, pc_number):
+        self.pc_number = pc_number
         self.wagi = { i: sorted(self.get_weight()[i], key=lambda x: x['point']) for i in range(1,6) }
         self.dNdKsi4_4 = [[0.0 for _ in range(4)] for _ in range(4)]
         self.dNdEta4_4 = [[0.0 for _ in range(4)] for _ in range(4)]
         self.dNdKsi9_4 = [[0.0 for _ in range(4)] for _ in range(9)]
         self.dNdEta9_4 = [[0.0 for _ in range(4)] for _ in range(9)]
         self.default_x_y = {'x': [0, 0.025, 0.025, 0], 'y':[0,0,0.025, 0.025]}
-        self.pc_number = pc_number
         self.det_j = 6400
 
     def get_weight(self):
@@ -58,18 +59,30 @@ class Calkowanie:
             etas.append( a*0.25 * (1 + (b*eta)) )
         return etas
     
-    def nodes_point(self):
-        nodes_x, weights_x = np.polynomial.legendre.leggauss(self.pc_number)
-        nodes_y, weights_y = np.polynomial.legendre.leggauss(self.pc_number)
-        nodes_combinations = np.array(np.meshgrid(nodes_x, nodes_y)).T.reshape(-1, 2)
-        weights_combinations = np.outer(weights_x, weights_y).reshape(-1)
+    def nodes_point_by_number(self):
+        gauss_nodes, gauss_weights = leggauss(self.pc_number)
+        gauss_points_and_weights = []
 
-        nodes_weight = np.zeros((len(nodes_combinations),3))
-        for i in range(len(nodes_combinations)):
-            nodes_weight[i][0], nodes_weight[i][1] = nodes_combinations[i][0], nodes_combinations[i][1]
-            nodes_weight[i][2] = weights_combinations[i]
-            
-        return nodes_weight
+        for xi, weight_xi in zip(gauss_nodes, gauss_weights):
+            for eta, weight_eta in zip(gauss_nodes, gauss_weights):
+                gauss_points_and_weights.append(
+                    [ xi,
+                    eta,
+                    weight_xi,
+                    weight_eta
+                ])
+
+        return gauss_points_and_weights
+        
+    
+    def nodes_point(self):
+        points = [
+            (-1 / math.sqrt(3), -1 / math.sqrt(3)),
+            (1 / math.sqrt(3), -1 / math.sqrt(3)),
+            (1 / math.sqrt(3), 1 / math.sqrt(3)),
+            (-1 / math.sqrt(3), 1 / math.sqrt(3))
+            ]
+        return points
     
     def PC(self):
         pc = [

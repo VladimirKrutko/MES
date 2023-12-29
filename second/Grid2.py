@@ -1,9 +1,7 @@
 import math
-from re import L
 import numpy as np
-from Node import Node
-from itertools import chain
-
+from Node2 import Node
+from Calkowanie2 import Calkowanie
 
 class Grid:
     PC = [
@@ -12,7 +10,9 @@ class Grid:
         [[-1, 1/math.sqrt(3)], [-1, -1/math.sqrt(3)]],
         [[-1/math.sqrt(3), -1], [1/math.sqrt(3), -1]],
         ]
-        
+    PC.reverse()
+    # PC = Calkowanie(2).PC_weight()
+    
     def __init__(self, data):
         self.data = data
         self.elemnt_xy = self.data["leaf_member"]
@@ -22,13 +22,6 @@ class Grid:
         self.P_glob = self.create_P_glob()
         self.C_glob = self.create_C_glob()
         self.TempinTime = self.temperatures_in_time()
-        
-    def wall_xy(self, x, y):
-        x_wall = []
-        for i in range(0, 4):
-            x_wall.append([[x[i], x[i+1 if i < 3 else -1]], [y[i], y[i+1 if i < 3 else -1]]])
-            
-        return [x_wall[3], x_wall[0], x_wall[1], x_wall[2]]
     
     def create_grig(self):
         grid = []
@@ -36,46 +29,35 @@ class Grid:
         for i in range(self.size[1]):
             grid_row = []
             for j in range(self.size[0]):
-                # pc_x_y = {'x':[], 'y':[]}
-                L_ind =[]
                 if j == 0 and i == 0:
                     pc = [Grid.PC[-2], Grid.PC[-1]]
-                    L_ind = [0, -1]
-                                        
+                
                 elif i == 0 and j == self.size[0]-1:
                     pc = [Grid.PC[0], Grid.PC[-1]]
-                    L_ind = [0, 1]
-        
+                
                 elif i == self.size[1]-1 and j == 0:
                     pc = [Grid.PC[1], Grid.PC[-2]]
-                    L_ind = [2, 3]
                     
                 elif i == self.size[1]-1 and j == self.size[0]-1:
                     pc = [Grid.PC[0], Grid.PC[1]]
-                    L_ind = [1,2]
-    
+                
                 elif i == 0:
                     pc = [Grid.PC[-1]]
-                    L_ind = [0]
                 
                 elif j == 0:
                     pc = [Grid.PC[-2]]
-                    L_ind = [3]
                     
                 elif j == self.size[0]-1:
                     pc = [Grid.PC[0]]
-                    L_ind = [1]
                     
                 elif i == self.size[1]-1:
                     pc = [Grid.PC[1]]
-                    L_ind = [2]
                     
                 else:
                     pc = []
-
-                x_y = self.elemnt_xy[last]
-                last+=1
-                grid_row.append( Node(x=x_y['x'], y=x_y['y'], pc=pc, data=self.data, L_ind=L_ind))
+                    
+                x_y = self.elemnt_xy[last+j]
+                grid_row.append( Node(x=x_y['x'], y=x_y['y'], pc=pc, data=self.data))
             grid.append(grid_row)
         return grid
     

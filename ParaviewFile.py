@@ -60,7 +60,7 @@ class ParaviewFile:
             file_data = "".join([self.file_header(), self.points(), self.cells(), 
                                  self.cell_types(), self.clarifying_data(), 
                                  self.temperature(t_vector)]) # type: ignore
-            with open(f"{path}/Foo{ind+1}.vtk", 'w') as f:
+            with open(f"{path}Foo{ind+1}.vtk", 'w') as f:
                 f.write(file_data)
             
             
