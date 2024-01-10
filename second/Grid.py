@@ -1,63 +1,95 @@
 import math
+from re import L
 import numpy as np
-from Node2 import Node
-from Calkowanie2 import Calkowanie
+from second.Node import Node
+from itertools import chain
+from second.Calkowanie import Calkowanie
 
-class Grid:
-    PC = [
-        [[1, -1/math.sqrt(3)], [1, 1/math.sqrt(3)]],   
-        [[-1/math.sqrt(3), 1], [1/math.sqrt(3), 1]],
-        [[-1, 1/math.sqrt(3)], [-1, -1/math.sqrt(3)]],
-        [[-1/math.sqrt(3), -1], [1/math.sqrt(3), -1]],
-        ]
-    PC.reverse()
-    # PC = Calkowanie(2).PC_weight()
-    
-    def __init__(self, data):
+
+class Grid:           
+    def __init__(self, data, pc_number):
         self.data = data
+        self.pc_number = pc_number
         self.elemnt_xy = self.data["leaf_member"]
         self.size = [int(self.data['Elements number']**0.5), int(self.data['Elements number']**0.5)]
+        self.calkowanie = Calkowanie(pc_number)
         self.grid = self.create_grig()
         self.H_glob = self.create_H_glob()
         self.P_glob = self.create_P_glob()
         self.C_glob = self.create_C_glob()
         self.TempinTime = self.temperatures_in_time()
+
+        
+    def weight_combination(self, n):
+        nodes_x, weights_x = np.polynomial.legendre.leggauss(n)
+        nodes_y, weights_y = np.polynomial.legendre.leggauss(n)
+        weights_combinations = np.array(np.meshgrid(weights_x, weights_y)).T.reshape(-1, 2)
+        return weights_combinations
+            
+    def PC_Weight(self):
+        node, weights = self.calkowanie.nodes_weight_combination()
+        weights= self.weight_combination(self.pc_number)
+        nodes_weight = [ np.append(node[ind], w) for ind, w in enumerate(weights)]
+        subarrays = np.array_split(nodes_weight, len(nodes_weight) // self.pc_number)
+        PC = []
+        for i in range(4):
+            if i ==0:
+                PC.append([[1.0, s[1], s[-1]] for s in subarrays[-1]])
+            elif i == 1:
+                PC.append([[s[0][0], 1.0, s[0][-2]] for s in [[s[-1] for s in subarrays]]] )
+            elif i == 2:
+                PC.append( [[-1.0, s[1], s[-1]] for  s in subarrays[0]] )
+            elif i == 3:
+                PC.append([[s[0], -1.0, s[-2]] for s in [s[0] for s in subarrays]] )
+        return PC
     
     def create_grig(self):
+        PC = self.PC_Weight()
         grid = []
         last = 0
         for i in range(self.size[1]):
             grid_row = []
             for j in range(self.size[0]):
+                # pc_x_y = {'x':[], 'y':[]}
+                L_ind =[]
                 if j == 0 and i == 0:
-                    pc = [Grid.PC[-2], Grid.PC[-1]]
-                
+                    pc = [PC[-2], PC[-1]]
+                    L_ind = [0, -1]
+                                        
                 elif i == 0 and j == self.size[0]-1:
-                    pc = [Grid.PC[0], Grid.PC[-1]]
-                
+                    pc = [PC[0], PC[-1]]
+                    L_ind = [0, 1]
+        
                 elif i == self.size[1]-1 and j == 0:
-                    pc = [Grid.PC[1], Grid.PC[-2]]
+                    pc = [PC[1], PC[-2]]
+                    L_ind = [2, 3]
                     
                 elif i == self.size[1]-1 and j == self.size[0]-1:
-                    pc = [Grid.PC[0], Grid.PC[1]]
-                
+                    pc = [PC[0], PC[1]]
+                    L_ind = [1,2]
+    
                 elif i == 0:
-                    pc = [Grid.PC[-1]]
+                    pc = [PC[-1]]
+                    L_ind = [0]
                 
                 elif j == 0:
-                    pc = [Grid.PC[-2]]
+                    pc = [PC[-2]]
+                    L_ind = [3]
                     
                 elif j == self.size[0]-1:
-                    pc = [Grid.PC[0]]
+                    pc = [PC[0]]
+                    L_ind = [1]
                     
                 elif i == self.size[1]-1:
-                    pc = [Grid.PC[1]]
-                    
+                    pc = [PC[1]]
+                    L_ind = [2]
+    
                 else:
                     pc = []
-                    
-                x_y = self.elemnt_xy[last+j]
-                grid_row.append( Node(x=x_y['x'], y=x_y['y'], pc=pc, data=self.data))
+
+                x_y = self.elemnt_xy[last]
+                last+=1
+                grid_row.append( Node(x=x_y['x'], y=x_y['y'], pc=pc, data=self.data, L_ind=L_ind, pc_number=self.pc_number))
             grid.append(grid_row)
         return grid
     
