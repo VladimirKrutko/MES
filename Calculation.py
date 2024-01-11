@@ -32,9 +32,13 @@ class Calculation:
         self.calkowanie.init_dNdx_dNdy(x, y)
         det_j = np.linalg.det(self.calkowanie.j_matrixes) # type: ignore
         point, weights = self.calkowanie.nodes_weight_combination()
+        print(point)
         N_range = [ self.calkowanie.N_range(pc) for pc in point]
+        
         N_dot = [ np.dot( N_range[i].reshape(4,1), N_range[i].reshape(1,4) ) for i in range( len( N_range))]
+        
         prom_res = [ N * d * data['Density'] * data['SpecificHeat'] for N, d in zip(N_dot, det_j)]
+        self.p_res = prom_res
         return sum([ weights[ind]*n for ind, n in enumerate(prom_res)])
         
     def weight_combination(self, n):

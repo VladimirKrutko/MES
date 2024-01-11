@@ -75,7 +75,7 @@ class Grid:
         return grid
     
     def create_H_glob(self):
-        H_locs = H_locs = [self.grid[i][j].surface['H'] +self.grid[i][j].surface['Hbc'] for i in range(self.size[0]) for j in range(self.size[0])]
+        H_locs = H_locs = [self.grid[i][j].surface['H'] + self.grid[i][j].surface['Hbc'] for i in range(self.size[0]) for j in range(self.size[0])]
         H_glob = np.zeros((int(self.data['Nodes number']), int(self.data['Nodes number'])))
         for el_ind, g_index in enumerate(self.data['Element']):
             for i in range(4):
@@ -106,11 +106,13 @@ class Grid:
     def temperatures_in_time(self):
         H_ = self.H_glob + self.C_glob/self.data['SimulationStepTime']
         t0 = np.array([self.data['InitialTemp'] for _ in range( int(self.data['Nodes number']))])
-        t1 = [t0]
+        t1 = t0
+        P_all = []
         t_in_time = []
         for _ in range(int(self.data['SimulationTime']/self.data['SimulationStepTime'])):
             P_ =  np.dot( self.C_glob/self.data['SimulationStepTime'], t0) + self.P_glob
+            P_all.append(P_)
             t1 = np.linalg.solve(H_, P_)
             t_in_time.append(t1)
             t0 = t1
-        return t_in_time
+        return [t_in_time, P_all, H_]
