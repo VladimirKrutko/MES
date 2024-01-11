@@ -15,7 +15,7 @@ class Calculation:
             lengths.append( math.sqrt( ( ( x[first] - x[last] )**2 + ( y[first] - y[last] )**2 ) ) )
         return lengths
     
-    def surfaces(self, x, y, pc, alfa, t_ot, data, L_ind, k_t = 25):
+    def surfaces(self, x, y, pc, alfa, t_ot, data, L_ind, k_t):
         self.calkowanie.init_dNdx_dNdy(x, y)
         res_dict = {
             'dNdx': self.calkowanie.dNdx,
@@ -27,7 +27,7 @@ class Calculation:
             'C' : self.C_calulation(x, y, data)
         }
         return res_dict
-        
+
     def C_calulation(self, x, y, data):
         self.calkowanie.init_dNdx_dNdy(x, y)
         det_j = np.linalg.det(self.calkowanie.j_matrixes) # type: ignore

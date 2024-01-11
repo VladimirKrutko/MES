@@ -13,8 +13,6 @@ class MesData:
         data['BC'] = self.get_bc()
         return data
     
-    
-    
     def file_data(self):
         with open(self.file_name, 'r') as f:
             file_text = f.read()

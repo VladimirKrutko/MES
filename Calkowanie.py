@@ -86,7 +86,6 @@ class Calkowanie:
         weights_combinations = np.outer(weights_x, weights_y).reshape(-1)
         return nodes_combinations, weights_combinations
     
-
     def jacobian_matrix(self, x,y, pc):
         self.computedXi_dEta()
         dy_dKsi = sum([ self.dNdKsi[pc][i]* y[i] for i in range(len(y))])
@@ -112,7 +111,6 @@ class Calkowanie:
             self.dNdx.append(x)
             self.dNdy.append(y)
         
-
     def mat_dN_dx(self, x, y):
         self.computedXi_dEta()
         self.init_dNdx_dNdy(x, y)
