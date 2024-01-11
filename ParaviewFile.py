@@ -39,8 +39,8 @@ class ParaviewFile:
 
     @add_newline_and_join
     def cells(self):
-        el_size = sum([i for i in range(int(self.data['Elements number'])+1)])
-        nodes_number = [f"CELLS {int(self.data['Elements number'])} {el_size}\n"]
+        # el_size = sum([i for i in range(int(self.data['Elements number'])+1)])
+        nodes_number = [f"CELLS {int(self.data['Elements number'])} { int(self.data['Elements number']) * 5 }\n"]
         for element in self.data['Element']:
             nodes_number.append( '4 '+' '.join( [str(i-1) for i in element] )+'\n' )
         return nodes_number

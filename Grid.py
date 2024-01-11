@@ -24,23 +24,6 @@ class Grid:
         nodes_y, weights_y = np.polynomial.legendre.leggauss(n)
         weights_combinations = np.array(np.meshgrid(weights_x, weights_y)).T.reshape(-1, 2)
         return weights_combinations
-            
-    # def PC_Weight(self):
-    #     node, weights = self.calkowanie.nodes_weight_combination()
-    #     weights= self.weight_combination(self.pc_number)
-    #     nodes_weight = [ np.append(node[ind], w) for ind, w in enumerate(weights)]
-    #     subarrays = np.array_split(nodes_weight, len(nodes_weight) // self.pc_number)
-    #     PC = []
-    #     for i in range(4):
-    #         if i ==0:
-    #             PC.append([[1.0, s[1], s[-1]] for s in subarrays[-1]])
-    #         elif i == 1:
-    #             PC.append([[s[0][0], 1.0, s[0][-2]] for s in [[s[-1] for s in subarrays]]] )
-    #         elif i == 2:
-    #             PC.append( [[-1.0, s[1], s[-1]] for  s in subarrays[0]] )
-    #         elif i == 3:
-    #             PC.append([[s[0], -1.0, s[-2]] for s in [s[0] for s in subarrays]] )
-    #     return PC
     
     def create_grig(self):
         PC = self.calculation.PC_Weight()
@@ -49,7 +32,6 @@ class Grid:
         for i in range(self.size[1]):
             grid_row = []
             for j in range(self.size[0]):
-                # pc_x_y = {'x':[], 'y':[]}
                 L_ind =[]
                 if j == 0 and i == 0:
                     pc = [PC[-2], PC[-1]]
@@ -82,7 +64,7 @@ class Grid:
                 elif i == self.size[1]-1:
                     pc = [PC[1]]
                     L_ind = [2]
-    
+                    
                 else:
                     pc = []
 

@@ -23,7 +23,7 @@ class Calculation:
             'Jakobian': self.calkowanie.j_matrixes,
             'H': self.calkowanie.H_pc_N(x, y, k_t),
             'Hbc': self.Hbc_calulation(x, y, pc, alfa, L_ind),
-            'P': self.P_vector(x, y, pc, alfa, t_ot),
+            'P': self.P_vector(x, y, pc, alfa, t_ot, L_ind),
             'C' : self.C_calulation(x, y, data)
         }
         return res_dict
@@ -73,12 +73,12 @@ class Calculation:
         dot_nranges = [ weights[i] * np.dot( n_range[i].reshape(4,1), n_range[i].reshape(1,4) ) for i in range( len( n_range))]
         return  alfa* sum(dot_nranges) * length
 
-    def P_vector(self, x, y, pc, alfa, t_ot):
+    def P_vector(self, x, y, pc, alfa, t_ot, L_ind):
         lengths = self.L(x, y)
         p_vector = []
         for i in range(len(pc)):
             n_range = [self.calkowanie.N_range([p[0], p[1]])  for p in pc[i]]
-            p_vector.append(self.P(alfa, n_range, t_ot, lengths[-i]/2, [p[-1] for p in pc[i]]))
+            p_vector.append(self.P(alfa, n_range, t_ot, lengths[L_ind[i]]/2, [p[-1] for p in pc[i]]))
         return sum(p_vector)
 
     def P(self, alfa, n_ranges, t_ot, detJ, weights):
