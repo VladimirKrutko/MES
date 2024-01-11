@@ -53,7 +53,7 @@ class Calculation:
             if i ==0:
                 PC.append([[1.0, s[1], s[-1]] for s in subarrays[-1]])
             elif i == 1:
-                PC.append([[s[0][0], 1.0, s[0][-2]] for s in [[s[-1] for s in subarrays]]] )
+                PC.append([[s[0], 1.0, s[-2]] for s in  [s[-1] for s in subarrays]] )
             elif i == 2:
                 PC.append( [[-1.0, s[1], s[-1]] for  s in subarrays[0]] )
             elif i == 3:
@@ -82,5 +82,4 @@ class Calculation:
         return sum(p_vector)
 
     def P(self, alfa, n_ranges, t_ot, detJ, weights):
-        print()
         return sum([weights[ind] * n.reshape(4,1)*t_ot  for ind, n in enumerate(n_ranges)])*detJ*alfa
