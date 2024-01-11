@@ -115,4 +115,4 @@ class Grid:
             t1 = np.linalg.solve(H_, P_)
             t_in_time.append(t1)
             t0 = t1
-        return [t_in_time, P_all, H_]
+        return t_in_time
