@@ -34,21 +34,15 @@ class Calculation:
         matrixes[-1], matrixes[-2] = matrixes[-2], matrixes[-1]
         
         point, weights = self.calkowanie.nodes_weight_combination()
-        print
         N_range = [ self.calkowanie.N_range(pc) for pc in point]
-        N_range[1][1], N_range[1][-1] = N_range[1][-1], N_range[1][1]
-        N_range[2] = N_range[2][::-1]
-        N_range[3] = N_range[3][::-1]
-        N_range[3][1], N_range[3][-1] = N_range[3][-1], N_range[3][1]
-        N_dot = [ np.dot( N_range[i].reshape(4,1), N_range[i].reshape(1,4) ) * np.linalg.det(matrixes[i])  for i in range( len( N_range))]
-        
+        if len(point) == 4:
+            N_range[1][1], N_range[1][-1] = N_range[1][-1], N_range[1][1]
+            N_range[2] = N_range[2][::-1]
+            N_range[3] = N_range[3][::-1]
+            N_range[3][1], N_range[3][-1] = N_range[3][-1], N_range[3][1]
+            N_dot = [ np.dot( N_range[i].reshape(4,1), N_range[i].reshape(1,4) ) * np.linalg.det(matrixes[i])  for i in range( len( N_range))]
+            
         prom_res = [ N * data['Density'] * data['SpecificHeat'] for N in N_dot]
-        # self.p_res = prom_res
-        # self.N_range = N_range
-        # self.matrixes = matrixes
-        # self.weights = weights
-        # self.point = point
-        # self.N_dot = N_dot
         return sum([ weights[ind]*n for ind, n in enumerate(prom_res)])
     
             
