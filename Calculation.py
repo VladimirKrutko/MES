@@ -82,4 +82,5 @@ class Calculation:
         return sum(p_vector)
 
     def P(self, alfa, n_ranges, t_ot, detJ, weights):
+        print()
         return sum([weights[ind] * n.reshape(4,1)*t_ot  for ind, n in enumerate(n_ranges)])*detJ*alfa

@@ -27,14 +27,20 @@ class ParaviewFile:
 
     @add_newline_and_join
     def points(self):
-        points = [f"POINTS { self.data['Nodes number']} float\n"]
+        points = [f"POINTS { int(self.data['Nodes number'])} float\n"]
         for x_y in self.data['Node']:
-            points.append(f"{x_y[0]} {x_y[1]} 0\n" )
+            if x_y[0] == 0.0:
+                points.append(f"{int(x_y[0])} {x_y[1]} 0\n" )
+            elif x_y[1] == 0.0:
+                points.append(f"{x_y[0]} {int(x_y[1])} 0\n" )
+            else:
+                points.append(f"{x_y[0]} {x_y[1]} 0\n" )
         return points    
 
     @add_newline_and_join
     def cells(self):
-        nodes_number = [f"CELLS {int(self.data['Elements number'])} {int(self.data['Elements number'])*5}\n"]
+        el_size = sum([i for i in range(int(self.data['Elements number'])+1)])
+        nodes_number = [f"CELLS {int(self.data['Elements number'])} {el_size}\n"]
         for element in self.data['Element']:
             nodes_number.append( '4 '+' '.join( [str(i-1) for i in element] )+'\n' )
         return nodes_number
@@ -42,13 +48,13 @@ class ParaviewFile:
     @add_newline_and_join
     def cell_types(self):
         el_number = int(self.data['Elements number'])
-        cell_types = [f"CELL_TYPES {str(el_number)}\n"]
-        [ cell_types.append(f'{str(el_number)}\n') for el in range(el_number) ]
+        cell_types = [f"CELL_TYPES 9\n"]
+        [ cell_types.append(f'9\n') for el in range(el_number) ]
         return cell_types
 
 
     def clarifying_data(self):
-        return "".join([f"POINT_DATA {self.data['Nodes number']}\n",
+        return "".join([f"POINT_DATA {int(self.data['Nodes number'])}\n",
                 "SCALARS Temp float 1\n",
                 "LOOKUP_TABLE default\n"])
         
@@ -62,6 +68,3 @@ class ParaviewFile:
                                  self.temperature(t_vector)]) # type: ignore
             with open(f"{path}Foo{ind+1}.vtk", 'w') as f:
                 f.write(file_data)
-            
-            
-            
