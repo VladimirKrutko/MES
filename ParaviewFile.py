@@ -48,7 +48,7 @@ class ParaviewFile:
     @add_newline_and_join
     def cell_types(self):
         el_number = int(self.data['Elements number'])
-        cell_types = [f"CELL_TYPES 9\n"]
+        cell_types = [f"CELL_TYPES {el_number}\n"]
         [ cell_types.append(f'9\n') for el in range(el_number) ]
         return cell_types
 
